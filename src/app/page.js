@@ -137,7 +137,7 @@ export default function Home() {
                         Analyzing...
                       </>
                     ) : (
-                      "Start Analysis"
+                      "開始分析"
                     )}
                   </Button>
                 </div>

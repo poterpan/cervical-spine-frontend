@@ -12,7 +12,7 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
   // 生成隨機顏色
   const generateColor = (index) => {
     const hue = (index * 137.508) % 360;  // 使用黃金角來分散顏色
-    return `hsla(${hue}, 70%, 60%, ${hoveredSegment?.id === `segment_${index}` ? 0.7 : 0.4})`;
+    return `hsla(${hue}, 100%, 50%, ${hoveredSegment?.id === `segment_${index}` ? 0.8 : 0.5})`;
   };
 
   // 創建 SVG 路徑
