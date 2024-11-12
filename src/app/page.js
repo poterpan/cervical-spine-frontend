@@ -9,6 +9,7 @@ import FileUpload from "@/components/FileUpload";
 import ModelSelector from "@/components/ModelSelector";
 import ResultDisplay from "@/components/ResultDisplay";
 import SliceSelector from "@/components/SliceSelector";
+import Settings from "@/components/Settings";
 import { analyzeImage, processNiftiFile } from "@/services/api";
 
 export default function Home() {
@@ -141,6 +142,7 @@ const handleAnalysis = useCallback(async () => {
   return (
     <main className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
+        <Settings /> {/* 添加設定按鈕 */}
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-center">
