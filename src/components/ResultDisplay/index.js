@@ -1,13 +1,27 @@
 // src/components/ResultDisplay/index.js
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Image as ImageIcon } from 'lucide-react';
 
 const ResultDisplay = ({ originalUrl, analysisResult }) => {
   const [hoveredSegment, setHoveredSegment] = useState(null);
+  const [displayUrl, setDisplayUrl] = useState(null);
+
+  useEffect(() => {
+    if (originalUrl) {
+      // 檢查 URL 類型並進行轉換
+      if (originalUrl instanceof Blob) {
+        const newUrl = URL.createObjectURL(originalUrl);
+        setDisplayUrl(newUrl);
+        return () => URL.revokeObjectURL(newUrl);
+      } else {
+        setDisplayUrl(originalUrl);
+      }
+    }
+  }, [originalUrl]);
 
   // 生成隨機顏色
   const generateColor = (index) => {
@@ -36,15 +50,17 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
       <div className="relative aspect-square rounded-lg overflow-hidden">
         {/* 原始圖片 */}
         <div className="absolute inset-0">
-          <Image
-            src={originalUrl}
-            alt="Original"
-            fill
-            unoptimized
-            className="object-contain"
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
+          {displayUrl && (
+            <Image
+              src={displayUrl}
+              alt="Original"
+              fill
+              className="object-contain"
+              priority
+              unoptimized
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          )}
         </div>
 
         {/* SVG 遮罩層 */}
@@ -113,14 +129,14 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
         </CardHeader>
         <CardContent>
           <div className="relative aspect-square rounded-lg overflow-hidden">
-            {originalUrl ? (
+            {displayUrl ? (
               <Image
-                src={originalUrl}
+                src={displayUrl}
                 alt="Original"
                 fill
-                unoptimized
                 className="object-contain"
                 priority
+                unoptimized
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             ) : (

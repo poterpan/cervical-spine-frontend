@@ -1,7 +1,9 @@
+// scr/components/FileUpload/utils.js
+
 export const validateFile = (file) => {
     if (!file) return 'No file selected';
   
-    const allowedTypes = ['.nii', '.dcm', '.jpg', '.jpeg', '.png'];
+    const allowedTypes = ['.nii', '.gz', '.dcm', '.jpg', '.jpeg', '.png'];
     const maxSize = 150 * 1024 * 1024; // 50MB
   
     const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));

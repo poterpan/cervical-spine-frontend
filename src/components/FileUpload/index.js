@@ -1,3 +1,5 @@
+// scr/components/FileUpload/index.js
+
 "use client";
 
 import React, { useState, useCallback } from 'react';
@@ -26,14 +28,18 @@ const FileUpload = ({ onFileSelect }) => {
   }, []);
 
   const handleFile = (selectedFile) => {
+    console.log('handleFile called with:', selectedFile);
     const validationError = validateFile(selectedFile);
     if (validationError) {
+      console.log('Validation error:', validationError);
       setError(validationError);
       return;
     }
 
+    console.log('File validation passed');
     setError('');
     setFile(selectedFile);
+    console.log('Calling onFileSelect');
     onFileSelect(selectedFile);
   };
 
@@ -68,7 +74,7 @@ const FileUpload = ({ onFileSelect }) => {
           <input
             type="file"
             onChange={handleFileChange}
-            accept=".nii,.dcm,.jpg,.jpeg,.png"
+            accept=".nii,.gz,.dcm,.jpg,.jpeg,.png"
             className="hidden"
             id="file-upload"
           />
