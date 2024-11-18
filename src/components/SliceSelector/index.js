@@ -1,6 +1,6 @@
 // components/SliceSelector/index.js
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ const SliceSelector = ({ file, slices, onSliceSelect }) => {
     if (!file) return;
 
     // 如果是一般圖片檔案
-    if (file.type.startsWith('image/')) {
+    if (file.type.startsWith("image/")) {
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       onSliceSelect(file);
@@ -29,10 +29,10 @@ const SliceSelector = ({ file, slices, onSliceSelect }) => {
   useEffect(() => {
     if (!slices || slices.length === 0) return;
 
-    console.log('Setting up slices, total:', slices.length);
-    const urls = slices.map(slice => URL.createObjectURL(slice));
+    console.log("Setting up slices, total:", slices.length);
+    const urls = slices.map((slice) => URL.createObjectURL(slice));
     setSliceUrls(urls);
-    
+
     // 設置預設顯示中間層
     const middleIndex = Math.floor(slices.length / 2);
     setCurrentIndex(middleIndex);
@@ -41,7 +41,7 @@ const SliceSelector = ({ file, slices, onSliceSelect }) => {
 
     // Cleanup function
     return () => {
-      urls.forEach(url => URL.revokeObjectURL(url));
+      urls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [slices, onSliceSelect]);
 
@@ -53,7 +53,7 @@ const SliceSelector = ({ file, slices, onSliceSelect }) => {
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(prev => {
+      setCurrentIndex((prev) => {
         const newIndex = prev - 1;
         onSliceSelect(slices[newIndex]);
         return newIndex;
@@ -63,7 +63,7 @@ const SliceSelector = ({ file, slices, onSliceSelect }) => {
 
   const handleNext = () => {
     if (currentIndex < slices.length - 1) {
-      setCurrentIndex(prev => {
+      setCurrentIndex((prev) => {
         const newIndex = prev + 1;
         onSliceSelect(slices[newIndex]);
         return newIndex;
@@ -72,7 +72,7 @@ const SliceSelector = ({ file, slices, onSliceSelect }) => {
   };
 
   // 一般圖片檔案的預覽
-  if (file && file.type.startsWith('image/')) {
+  if (file && file.type.startsWith("image/")) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">預覽圖片</h3>
@@ -99,7 +99,7 @@ const SliceSelector = ({ file, slices, onSliceSelect }) => {
         <h3 className="text-lg font-semibold">
           選擇切片 ({currentIndex + 1} / {sliceUrls.length})
         </h3>
-        
+
         {/* 主要切片預覽 */}
         <div className="relative w-full aspect-[4/3] overflow-hidden rounded-lg bg-gray-100">
           <Image
@@ -157,7 +157,7 @@ const SliceSelector = ({ file, slices, onSliceSelect }) => {
   // 如果沒有內容可顯示
   return (
     <div className="text-center py-8 text-gray-500">
-      {isLoading ? '正在載入切片...' : '尚未選擇檔案'}
+      {isLoading ? "正在載入切片..." : "尚未選擇檔案"}
     </div>
   );
 };

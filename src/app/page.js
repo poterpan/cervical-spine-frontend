@@ -62,46 +62,47 @@ export default function Home() {
     };
   }, [cleanupUrl]);
 
+  const handleFileSelect = useCallback(async (file) => {
+    console.log("handleFileSelect called with file:", file);
+    console.log("File type:", file.type);
+    console.log("File name:", file.name);
 
-const handleFileSelect = useCallback(async (file) => {
-  console.log('handleFileSelect called with file:', file);
-  console.log('File type:', file.type);
-  console.log('File name:', file.name);
+    setSelectedFile(file);
+    setSlices([]);
+    setSelectedSlice(null);
 
-  setSelectedFile(file);
-  setSlices([]);
-  setSelectedSlice(null);
-
-  if (!file) {
-    console.log('No file provided');
-    return;
-  }
-
-  // 檢查是否為 NIfTI 或 DICOM 檔案
-  const isNiftiOrDicom = file.name.toLowerCase().match(/\.(nii|nii\.gz|dcm)$/);
-  console.log('Is NIfTI or DICOM:', isNiftiOrDicom);
-
-  if (isNiftiOrDicom) {
-    setIsProcessing(true);
-    try {
-      console.log('Starting to process NIfTI/DICOM file');
-      const slicesData = await processNiftiFile(file);
-      console.log('Received slices:', slicesData);
-      console.log('Number of slices:', slicesData.length);
-      setSlices(slicesData);
-    } catch (error) {
-      console.error("Error processing file:", error);
-      alert("處理檔案時發生錯誤");
-    } finally {
-      setIsProcessing(false);
+    if (!file) {
+      console.log("No file provided");
+      return;
     }
-  } else {
-    console.log('Regular image file, creating preview URL');
-  }
-  
-  console.log('Switching to select tab');
-  setActiveTab("select");
-}, []);
+
+    // 檢查是否為 NIfTI 或 DICOM 檔案
+    const isNiftiOrDicom = file.name
+      .toLowerCase()
+      .match(/\.(nii|nii\.gz|dcm)$/);
+    console.log("Is NIfTI or DICOM:", isNiftiOrDicom);
+
+    if (isNiftiOrDicom) {
+      setIsProcessing(true);
+      try {
+        console.log("Starting to process NIfTI/DICOM file");
+        const slicesData = await processNiftiFile(file);
+        console.log("Received slices:", slicesData);
+        console.log("Number of slices:", slicesData.length);
+        setSlices(slicesData);
+      } catch (error) {
+        console.error("Error processing file:", error);
+        alert("處理檔案時發生錯誤");
+      } finally {
+        setIsProcessing(false);
+      }
+    } else {
+      console.log("Regular image file, creating preview URL");
+    }
+
+    console.log("Switching to select tab");
+    setActiveTab("select");
+  }, []);
 
   const handleModelSelect = useCallback((model) => {
     setSelectedModel(model);
@@ -111,33 +112,33 @@ const handleFileSelect = useCallback(async (file) => {
     setSelectedSlice(slice);
   }, []);
 
-const handleAnalysis = useCallback(async () => {
-  if (!selectedSlice || !selectedModel) return;
+  const handleAnalysis = useCallback(async () => {
+    if (!selectedSlice || !selectedModel) return;
 
-  setIsAnalyzing(true);
+    setIsAnalyzing(true);
 
-  try {
-    console.log("Starting analysis...");
-    const analysisData = await analyzeImage(selectedSlice, selectedModel);
-    console.log("Analysis result:", analysisData);
+    try {
+      console.log("Starting analysis...");
+      const analysisData = await analyzeImage(selectedSlice, selectedModel);
+      console.log("Analysis result:", analysisData);
 
-    setAnalysisResult(analysisData);
-    
-    // 直接傳遞 selectedSlice (它應該是一個 Blob 或 File 對象)
-    setImageUrls((prev) => ({
-      ...prev,
-      original: selectedSlice,
-      analyzed: selectedSlice // 如果後端回傳了處理後的圖片，這裡應該用處理後的圖片
-    }));
+      setAnalysisResult(analysisData);
 
-    setActiveTab("results");
-  } catch (error) {
-    console.error("Analysis failed:", error);
-    alert(error.message);
-  } finally {
-    setIsAnalyzing(false);
-  }
-}, [selectedSlice, selectedModel]);
+      // 直接傳遞 selectedSlice (它應該是一個 Blob 或 File 對象)
+      setImageUrls((prev) => ({
+        ...prev,
+        original: selectedSlice,
+        analyzed: selectedSlice, // 如果後端回傳了處理後的圖片，這裡應該用處理後的圖片
+      }));
+
+      setActiveTab("results");
+    } catch (error) {
+      console.error("Analysis failed:", error);
+      alert(error.message);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [selectedSlice, selectedModel]);
 
   return (
     <main className="min-h-screen bg-gray-50 p-8">
@@ -184,7 +185,7 @@ const handleAnalysis = useCallback(async () => {
                     slices={slices}
                     onSliceSelect={handleSliceSelect}
                   />
-                  
+
                   <ModelSelector
                     selectedModel={selectedModel}
                     onModelSelect={handleModelSelect}

@@ -4,11 +4,20 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, Maximize2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const ResultDisplay = ({ originalUrl, analysisResult }) => {
   const [hoveredSegment, setHoveredSegment] = useState(null);
   const [displayUrl, setDisplayUrl] = useState(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     if (originalUrl) {
@@ -70,7 +79,7 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
           getMidPoint(line2[0], line2[1])
         );
 
-        const labelRadius = 12; // 背景圓的半徑
+        const labelRadius = 10; // 背景圓的半徑
         const labelText = Math.abs(angle).toFixed(1) + "°";
 
         return (
@@ -109,7 +118,7 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
               x={midPoint.x}
               y={midPoint.y}
               fill="white"
-              fontSize="10"
+              fontSize="8"
               textAnchor="middle"
               dominantBaseline="middle"
               className="pointer-events-none select-none font-medium"
@@ -172,7 +181,7 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
     return segments.filter((s) => connectedIds.has(s.id));
   };
 
-  const renderSegments = () => {
+  const renderAnalysisContent = (isFullscreenMode = false) => {
     if (!analysisResult?.segments || !analysisResult?.image_metadata) {
       return (
         <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
@@ -185,8 +194,12 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
     const { segments } = analysisResult;
     const angleSummary = generateAngleSummary(segments);
 
+    const containerClass = isFullscreenMode
+      ? "w-full h-full relative"
+      : "relative aspect-square rounded-lg overflow-hidden";
+
     return (
-      <div className="relative aspect-square rounded-lg overflow-hidden">
+      <div className={containerClass}>
         {/* 原始圖片 */}
         <div className="absolute inset-0">
           {displayUrl && (
@@ -197,7 +210,7 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
               className="object-contain"
               priority
               unoptimized
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              sizes="100vw"
             />
           )}
         </div>
@@ -209,7 +222,6 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
           preserveAspectRatio="xMidYMid meet"
         >
           <g>
-            {/* 主要圖層 - 所有segment */}
             {segments.map((segment, index) => (
               <g
                 key={segment.id}
@@ -231,7 +243,7 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
                   fill="white"
                   stroke="black"
                   strokeWidth="0.5"
-                  fontSize="12"
+                  fontSize={isFullscreenMode ? "12" : "12"}
                   textAnchor="middle"
                   dominantBaseline="middle"
                   className="pointer-events-none select-none"
@@ -241,7 +253,6 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
               </g>
             ))}
 
-            {/* 角度線圖層 */}
             {hoveredSegment && renderAngleLines(hoveredSegment, segments)}
           </g>
         </svg>
@@ -251,9 +262,6 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
           <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white p-2 rounded z-20">
             <p className="font-bold">{hoveredSegment.label}</p>
             <p>信心度: {(hoveredSegment.confidence * 100).toFixed(1)}%</p>
-            {hoveredSegment.is_reference && (
-              <p className="text-yellow-400">參考區域</p>
-            )}
           </div>
         )}
 
@@ -272,45 +280,76 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
             ))}
           </div>
         </div>
-        
       </div>
     );
   };
 
   return (
-    <div className="grid grid-cols-2 gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>原始影像</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="relative aspect-square rounded-lg overflow-hidden">
-            {displayUrl ? (
-              <Image
-                src={displayUrl}
-                alt="Original"
-                fill
-                className="object-contain"
-                priority
-                unoptimized
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            ) : (
-              <div className="aspect-square bg-gray-100 flex items-center justify-center">
-                <ImageIcon className="h-12 w-12 text-gray-400" />
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+    <>
+      <div className="grid grid-cols-2 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center h-[56px] pb-0 space-y-0">
+            <CardTitle className="text-xl">原始影像</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="relative aspect-square rounded-lg overflow-hidden">
+              {displayUrl ? (
+                <Image
+                  src={displayUrl}
+                  alt="Original"
+                  fill
+                  className="object-contain"
+                  priority
+                  unoptimized
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              ) : (
+                <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                  <ImageIcon className="h-12 w-12 text-gray-400" />
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>分割結果</CardTitle>
-        </CardHeader>
-        <CardContent>{renderSegments()}</CardContent>
-      </Card>
-    </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between h-[56px] pb-0 space-y-0">
+            <CardTitle className="text-xl">分割結果</CardTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsFullscreen(true)}
+              className="ml-auto"
+              title="全螢幕檢視"
+            >
+              <Maximize2 className="h-4 w-4" />
+            </Button>
+          </CardHeader>
+          <CardContent className="pt-6">
+            {renderAnalysisContent(false)}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
+        <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] p-6 [&>button]:hidden">
+          <DialogHeader className="absolute w-full flex justify-between items-center">
+            <DialogTitle className="sr-only">分割結果全螢幕視圖</DialogTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsFullscreen(false)}
+              className="ml-auto"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </DialogHeader>
+          <div className="relative w-full h-full">
+            {renderAnalysisContent(true)}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

@@ -1,5 +1,5 @@
 // components/Settings/index.js
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,15 +12,15 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Settings as SettingsIcon } from 'lucide-react';
+import { Settings as SettingsIcon } from "lucide-react";
 
 const Settings = () => {
-  const [apiUrl, setApiUrl] = useState('http://127.0.0.1:5000');
+  const [apiUrl, setApiUrl] = useState("http://127.0.0.1:5000");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     // 從 localStorage 讀取已保存的 API URL
-    const savedUrl = localStorage.getItem('apiUrl');
+    const savedUrl = localStorage.getItem("apiUrl");
     if (savedUrl) {
       setApiUrl(savedUrl);
     }
@@ -28,16 +28,16 @@ const Settings = () => {
 
   const handleSave = () => {
     // 保存到 localStorage
-    localStorage.setItem('apiUrl', apiUrl);
+    localStorage.setItem("apiUrl", apiUrl);
     // 更新全局變數
     window.API_URL = apiUrl;
     setOpen(false);
   };
 
   const handleReset = () => {
-    const defaultUrl = 'http://127.0.0.1:5000';
+    const defaultUrl = "http://127.0.0.1:5000";
     setApiUrl(defaultUrl);
-    localStorage.setItem('apiUrl', defaultUrl);
+    localStorage.setItem("apiUrl", defaultUrl);
     window.API_URL = defaultUrl;
     setOpen(false);
   };
@@ -45,7 +45,11 @@ const Settings = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="absolute top-4 right-4">
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute top-4 right-4"
+        >
           <SettingsIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
