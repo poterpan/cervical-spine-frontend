@@ -11,7 +11,7 @@ const getApiUrl = () => {
     return savedUrl;
   }
   // 最後使用環境變數或預設值
-  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000';
+  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';  // 改為8000端口
 };
 
 export const processNiftiFile = async (file) => {
@@ -22,11 +22,15 @@ export const processNiftiFile = async (file) => {
     const response = await fetch(`${getApiUrl()}/process-file`, {
       method: 'POST',
       body: formData,
+      mode: 'cors',  // 明確指定CORS模式
+      headers: {
+        'Accept': 'application/json',
+      },
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Processing failed');
+      throw new Error(error.detail || error.error || 'Processing failed');
     }
 
     const data = await response.json();
@@ -57,21 +61,27 @@ export const processNiftiFile = async (file) => {
 export const analyzeImage = async (file, model) => {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('model', model);
+  if (model) {
+    formData.append('model', model);
+  }
 
   try {
-    console.log('Sending request to:', `${getApiUrl()}/analyze`);
+    console.log('Sending request to:', `${getApiUrl()}/analyze/spine`);  // 更新端點路徑
     
-    const response = await fetch(`${getApiUrl()}/analyze`, {
+    const response = await fetch(`${getApiUrl()}/analyze/spine`, {  // 更新端點路徑
       method: 'POST',
       body: formData,
+      mode: 'cors',  // 明確指定CORS模式
+      headers: {
+        'Accept': 'application/json',
+      },
     });
 
     console.log('Response status:', response.status);
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || 'Analysis failed');
+      throw new Error(errorData.detail || errorData.error || 'Analysis failed');
     }
 
     const data = await response.json();

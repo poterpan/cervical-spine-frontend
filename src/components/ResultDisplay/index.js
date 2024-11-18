@@ -1,10 +1,10 @@
 // src/components/ResultDisplay/index.js
 "use client";
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Image as ImageIcon } from 'lucide-react';
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Image as ImageIcon } from "lucide-react";
 
 const ResultDisplay = ({ originalUrl, analysisResult }) => {
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -12,7 +12,6 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
 
   useEffect(() => {
     if (originalUrl) {
-      // 檢查 URL 類型並進行轉換
       if (originalUrl instanceof Blob) {
         const newUrl = URL.createObjectURL(originalUrl);
         setDisplayUrl(newUrl);
@@ -25,18 +24,156 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
 
   // 生成隨機顏色
   const generateColor = (index) => {
-    const hue = (index * 137.508) % 360;  // 使用黃金角來分散顏色
-    return `hsla(${hue}, 100%, 50%, ${hoveredSegment?.id === `segment_${index}` ? 0.8 : 0.5})`;
+    const hue = (index * 137.508) % 360;
+    return `hsla(${hue}, 100%, 50%, ${
+      hoveredSegment?.id === `segment_${index}` ? 0.8 : 0.5
+    })`;
   };
 
   // 創建 SVG 路徑
   const createPathFromPoints = (points) => {
-    if (!points || points.length === 0) return '';
-    return `M ${points.map(([x, y]) => `${x} ${y}`).join(' L ')} Z`;
+    if (!points || points.length === 0) return "";
+    return `M ${points.map(([x, y]) => `${x} ${y}`).join(" L ")} Z`;
+  };
+
+  // 計算兩點之間的中點
+  const getMidPoint = (p1, p2) => ({
+    x: (p1.x + p2.x) / 2,
+    y: (p1.y + p2.y) / 2,
+  });
+
+  // 渲染角度線和標籤
+  const renderAngleLines = (segment, segments) => {
+    if (!segment.adjacent_angles) return null;
+
+    return Object.entries(segment.adjacent_angles).map(
+      ([adjacentLabel, angleInfo]) => {
+        const { connected_segments, angle } = angleInfo;
+
+        // 找到相連的兩個segment
+        const segment1 = segments.find(
+          (s) => s.id === connected_segments[0].segment_id
+        );
+        const segment2 = segments.find(
+          (s) => s.id === connected_segments[1].segment_id
+        );
+
+        if (!segment1 || !segment2) return null;
+
+        // 取得兩個segment的中心線
+        const line1 = segment1.center_line;
+        const line2 = segment2.center_line;
+
+        // 計算角度標籤的位置 - 在兩個segment之間
+        const midPoint = getMidPoint(
+          getMidPoint(line1[0], line1[1]),
+          getMidPoint(line2[0], line2[1])
+        );
+
+        const labelRadius = 12; // 背景圓的半徑
+        const labelText = Math.abs(angle).toFixed(1) + "°";
+
+        return (
+          <g key={`${segment1.id}-${segment2.id}`}>
+            {/* 第一個segment的中心線 */}
+            <line
+              x1={line1[0].x}
+              y1={line1[0].y}
+              x2={line1[1].x}
+              y2={line1[1].y}
+              stroke="yellow"
+              strokeWidth="2"
+              className="opacity-75"
+            />
+            {/* 第二個segment的中心線 */}
+            <line
+              x1={line2[0].x}
+              y1={line2[0].y}
+              x2={line2[1].x}
+              y2={line2[1].y}
+              stroke="yellow"
+              strokeWidth="2"
+              className="opacity-75"
+            />
+            {/* 角度標籤背景 */}
+            <circle
+              cx={midPoint.x}
+              cy={midPoint.y}
+              r={labelRadius}
+              fill="black"
+              fillOpacity="0.6"
+              className="pointer-events-none"
+            />
+            {/* 角度標籤 */}
+            <text
+              x={midPoint.x}
+              y={midPoint.y}
+              fill="white"
+              fontSize="10"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              className="pointer-events-none select-none font-medium"
+              style={{
+                paintOrder: "stroke",
+                stroke: "rgba(0, 0, 0, 0.5)",
+                strokeWidth: "1px",
+              }}
+            >
+              {labelText}
+            </text>
+          </g>
+        );
+      }
+    );
+  };
+
+  // 生成角度摘要數據
+  const generateAngleSummary = (segments) => {
+    const summary = [];
+    // 只處理參考區域的segment
+    const referenceSegments = segments.filter(
+      (segment) => segment.is_reference
+    );
+
+    referenceSegments.forEach((segment) => {
+      Object.entries(segment.adjacent_angles).forEach(
+        ([adjacentLabel, angleInfo]) => {
+          // 取得連接的segment標籤
+          const segmentPair = angleInfo.connected_segments
+            .map((s) => s.label)
+            .sort()
+            .join("-");
+
+          // 檢查是否已經添加過這個組合
+          if (!summary.some((s) => s.pair === segmentPair)) {
+            summary.push({
+              pair: segmentPair,
+              angle: Math.abs(angleInfo.angle),
+            });
+          }
+        }
+      );
+    });
+    // 按照標籤順序排序
+    return summary.sort((a, b) => a.pair.localeCompare(b.pair));
+  };
+
+  // 找到與給定segment相鄰的segments
+  const getConnectedSegments = (segment, segments) => {
+    if (!segment.adjacent_angles) return [];
+
+    const connectedIds = new Set();
+    Object.values(segment.adjacent_angles).forEach((angleInfo) => {
+      angleInfo.connected_segments.forEach((conn) =>
+        connectedIds.add(conn.segment_id)
+      );
+    });
+
+    return segments.filter((s) => connectedIds.has(s.id));
   };
 
   const renderSegments = () => {
-    if (!analysisResult?.segments || !analysisResult?.metadata?.image_size) {
+    if (!analysisResult?.segments || !analysisResult?.image_metadata) {
       return (
         <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
           <ImageIcon className="h-12 w-12 text-gray-400" />
@@ -44,7 +181,9 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
       );
     }
 
-    const { width, height } = analysisResult.metadata.image_size;
+    const { width, height } = analysisResult.image_metadata;
+    const { segments } = analysisResult;
+    const angleSummary = generateAngleSummary(segments);
 
     return (
       <div className="relative aspect-square rounded-lg overflow-hidden">
@@ -70,53 +209,70 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
           preserveAspectRatio="xMidYMid meet"
         >
           <g>
-            {analysisResult.segments.map((segment, index) => (
+            {/* 主要圖層 - 所有segment */}
+            {segments.map((segment, index) => (
               <g
                 key={segment.id}
                 onMouseEnter={() => setHoveredSegment(segment)}
                 onMouseLeave={() => setHoveredSegment(null)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               >
                 <path
-                  d={createPathFromPoints(segment.points)}
+                  d={createPathFromPoints(segment.mask.points)}
                   fill={generateColor(index)}
-                  fillOpacity={hoveredSegment?.id === segment.id ? "0.7" : "0.4"}
+                  fillOpacity={
+                    hoveredSegment?.id === segment.id ? "0.7" : "0.4"
+                  }
                   className="transition-all duration-200"
                 />
                 <text
-                  x={segment.bbox.x1}
-                  y={segment.bbox.y1 - 5}
+                  x={segment.mask.centroid.x}
+                  y={segment.mask.centroid.y}
                   fill="white"
                   stroke="black"
                   strokeWidth="0.5"
                   fontSize="12"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
                   className="pointer-events-none select-none"
                 >
-                  {segment.class_name}
+                  {segment.label}
                 </text>
               </g>
             ))}
+
+            {/* 角度線圖層 */}
+            {hoveredSegment && renderAngleLines(hoveredSegment, segments)}
           </g>
         </svg>
 
         {/* Hover 信息 */}
         {hoveredSegment && (
           <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white p-2 rounded z-20">
-            <p className="font-bold">{hoveredSegment.class_name}</p>
+            <p className="font-bold">{hoveredSegment.label}</p>
             <p>信心度: {(hoveredSegment.confidence * 100).toFixed(1)}%</p>
+            {hoveredSegment.is_reference && (
+              <p className="text-yellow-400">參考區域</p>
+            )}
           </div>
         )}
 
-        {/* 角度信息 */}
-        {analysisResult.angles && (
-          <div className="absolute bottom-4 right-4 bg-black bg-opacity-75 text-white p-2 rounded z-20">
-            {analysisResult.angles.pairs.map((pair, index) => (
-              <div key={pair} className="text-sm">
-                {pair}: {analysisResult.angles.values[index].toFixed(1)}°
+        {/* 角度摘要 */}
+        <div className="absolute bottom-4 right-4 bg-black bg-opacity-75 text-white p-3 rounded z-20">
+          <div className="text-sm font-medium mb-2">測量角度摘要</div>
+          <div className="space-y-1">
+            {angleSummary.map(({ pair, angle }) => (
+              <div
+                key={pair}
+                className="text-sm flex items-center justify-between text-white"
+              >
+                <span className="mr-4">{pair}</span>
+                <span>{angle.toFixed(1)}°</span>
               </div>
             ))}
           </div>
-        )}
+        </div>
+        
       </div>
     );
   };
@@ -152,9 +308,7 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
         <CardHeader>
           <CardTitle>分割結果</CardTitle>
         </CardHeader>
-        <CardContent>
-          {renderSegments()}
-        </CardContent>
+        <CardContent>{renderSegments()}</CardContent>
       </Card>
     </div>
   );
