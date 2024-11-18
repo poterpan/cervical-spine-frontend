@@ -1,29 +1,38 @@
 // src/components/ModelSelector/index.js
-import { Button } from '@/components/ui/button';
-import { Image as ImageIcon } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const ModelSelector = ({ selectedModel, onModelSelect }) => {
   const models = [
-    { id: 'yolov11', name: 'YOLOv11' },
-    { id: 'mmdetection', name: 'MMDetection' }
+    { id: "yolov5", name: "YOLOv5", description: "快速且準確的目標檢測" },
+    { id: "yolov8", name: "YOLOv8", description: "優化的即時檢測性能" },
+    { id: "yolov11", name: "YOLOv11", description: "最新的YOLO架構" },
+    { id: "mmdetection", name: "MMDetection", description: "多樣化的檢測框架" },
   ];
 
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium">選擇模型</h3>
-      <div className="grid grid-cols-2 gap-4">
-        {models.map(model => (
-          <Button
-            key={model.id}
-            variant={selectedModel === model.id ? 'default' : 'outline'}
-            className="p-8 h-auto flex flex-col items-center space-y-2"
-            onClick={() => onModelSelect(model.id)}
-          >
-            <ImageIcon className="h-8 w-8" />
-            <span>{model.name}</span>
-          </Button>
-        ))}
-      </div>
+      <Card>
+      <CardContent className="pt-6">
+        <RadioGroup
+          value={selectedModel}
+          onValueChange={onModelSelect}
+          className="grid grid-cols-2 gap-4"
+        >
+          {models.map((model) => (
+            <div key={model.id} className="flex items-center space-x-2">
+              <RadioGroupItem value={model.id} id={model.id} />
+              <Label htmlFor={model.id} className="flex flex-col">
+                <span className="font-medium">{model.name}</span>
+                <span className="text-sm text-gray-500">{model.description}</span>
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+      </CardContent>
+    </Card>
     </div>
   );
 };
