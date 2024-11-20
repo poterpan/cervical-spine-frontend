@@ -5,12 +5,13 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { checkHealth } from "@/services/api";
 
+
 const HealthCheck = () => {
   const [status, setStatus] = useState("unknown");
   const [isChecking, setIsChecking] = useState(false);
   const { toast } = useToast();
 
-  const handleHealthCheck = async () => {
+  const handleHealthCheck = useCallback(async () => {
     if (isChecking) return;
 
     setIsChecking(true);
@@ -26,18 +27,17 @@ const HealthCheck = () => {
       setStatus("error");
       toast({
         title: "連線異常",
-        description: "無法連接到後端服務",
+        description: "無法連接到後端伺服器",
         variant: "destructive",
       });
     } finally {
       setIsChecking(false);
     }
-  };
+  }, [isChecking, toast]);
 
-  // 初始檢查
   useEffect(() => {
     handleHealthCheck();
-  }, []);
+  }, [handleHealthCheck]);
 
   // 狀態樣式
   const getStatusStyles = () => {
@@ -65,7 +65,7 @@ const HealthCheck = () => {
         <div className={`h-3 w-3 rounded-full ${getStatusStyles()}`} />
       )}
       <span className="text-xs text-gray-600">
-        {isChecking ? "檢查中" : "後端狀態"}
+        {isChecking ? "檢查中" : "伺服器狀態"}
       </span>
     </Button>
   );
