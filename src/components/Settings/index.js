@@ -15,11 +15,10 @@ import { Label } from "@/components/ui/label";
 import { Settings as SettingsIcon } from "lucide-react";
 
 const Settings = () => {
-  const [apiUrl, setApiUrl] = useState("http://127.0.0.1:5000");
+  const [apiUrl, setApiUrl] = useState("https://api.panspace.me:8001");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // 從 localStorage 讀取已保存的 API URL
     const savedUrl = localStorage.getItem("apiUrl");
     if (savedUrl) {
       setApiUrl(savedUrl);
@@ -27,15 +26,13 @@ const Settings = () => {
   }, []);
 
   const handleSave = () => {
-    // 保存到 localStorage
     localStorage.setItem("apiUrl", apiUrl);
-    // 更新全局變數
     window.API_URL = apiUrl;
     setOpen(false);
   };
 
   const handleReset = () => {
-    const defaultUrl = "http://127.0.0.1:5000";
+    const defaultUrl = "https://api.panspace.me:8001";
     setApiUrl(defaultUrl);
     localStorage.setItem("apiUrl", defaultUrl);
     window.API_URL = defaultUrl;
@@ -45,12 +42,8 @@ const Settings = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute top-4 right-4"
-        >
-          <SettingsIcon className="h-4 w-4" />
+        <Button variant="ghost" size="icon" className="flex items-center">
+          <SettingsIcon className="h-5 w-5" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -70,7 +63,7 @@ const Settings = () => {
               value={apiUrl}
               onChange={(e) => setApiUrl(e.target.value)}
               className="col-span-3"
-              placeholder="http://127.0.0.1:5000"
+              placeholder="https://api.panspace.me:8001"
             />
           </div>
         </div>
