@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Building2, Users, Activity, History } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/FileUpload";
 import ModelSelector from "@/components/ModelSelector";
 import ResultDisplay from "@/components/ResultDisplay";
@@ -17,6 +18,7 @@ import HealthCheck from "@/components/HealthCheck";
 import { analyzeImage, processNiftiFile } from "@/services/api";
 
 export default function Home() {
+  const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -137,12 +139,15 @@ export default function Home() {
 
       setActiveTab("results");
     } catch (error) {
-      console.error("Analysis failed:", error);
-      alert(error.message);
+      toast({
+        title: "分析失敗",
+        description: error.message,
+        variant: "destructive",
+      });
     } finally {
       setIsAnalyzing(false);
     }
-  }, [selectedSlice, selectedModel]);
+  }, [selectedSlice, selectedModel, toast, setActiveTab]);
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -81,13 +81,19 @@ export const analyzeImage = async (file, model) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.detail || errorData.error || 'Analysis failed');
+      const errorMessage = errorData.detail || errorData.error || 'Analysis failed';
+      
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
+    // 檢查結果是否為空
+    if (!data.segments || data.segments.length === 0) {
+      throw new Error('未能檢測到任何椎骨，請確認圖片內容或嘗試其他圖片。');
+    }
     console.log('Received data:', data);
-
     return data;
+
   } catch (error) {
     console.error('Analysis error:', error);
     throw error;
