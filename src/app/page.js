@@ -20,7 +20,7 @@ import { analyzeImage, processNiftiFile } from "@/services/api";
 export default function Home() {
   const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState(null);
-  const [selectedModel, setSelectedModel] = useState(null);
+  const [selectedModel, setSelectedModel] = useState("yolov11");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);

@@ -7,7 +7,7 @@ const ModelSelector = ({ selectedModel, onModelSelect }) => {
   const models = [
     { id: "yolov5", name: "YOLOv5", description: "快速且準確的目標檢測" },
     { id: "yolov8", name: "YOLOv8", description: "優化的即時檢測性能" },
-    { id: "yolov11", name: "YOLOv11", description: "最新的YOLO架構" },
+    { id: "yolov11", name: "YOLOv11 (推薦)", description: "最新的YOLO架構" },
     { id: "mmdetection", name: "MMDetection", description: "多樣化的檢測框架" },
   ];
 
