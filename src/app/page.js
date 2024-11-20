@@ -174,9 +174,11 @@ export default function Home() {
               <h1 className="text-2xl font-bold text-gray-900">
                 椎骨影像分析系統
               </h1>
-              <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
-                台中榮總
-              </span>
+              <div className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-800">
+                <div className="text-xs">逢甲通訊</div>
+                <div className="h-px bg-blue-200 my-0.5"></div>
+                <div className="text-xs">台中榮總</div>
+              </div>
               <HealthCheck />
             </div>
             <div className="flex items-center space-x-4">
