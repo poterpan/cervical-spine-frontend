@@ -15,6 +15,8 @@ import Settings from "@/components/Settings";
 import VersionInfo from "@/components/VersionInfo";
 import IssueReport from "@/components/IssueReport";
 import HealthCheck from "@/components/HealthCheck";
+import RecordsDialog from "@/components/RecordsDialog";
+import ExampleData from "@/components/ExampleData";
 import { analyzeImage, processNiftiFile } from "@/services/api";
 
 export default function Home() {
@@ -95,7 +97,18 @@ export default function Home() {
         const slicesData = await processNiftiFile(file);
         console.log("Received slices:", slicesData);
         console.log("Number of slices:", slicesData.length);
-        setSlices(slicesData);
+        // 為每個切片添加原始文件名
+        const slicesWithName = slicesData.map((blob, index) => {
+          // 創建新的 File 對象，保留原始文件名但添加切片編號
+          return new File(
+            [blob],
+            `${file.name.split(".")[0]}_slice_${index}.png`,
+            {
+              type: "image/png",
+            }
+          );
+        });
+        setSlices(slicesWithName);
       } catch (error) {
         console.error("Error processing file:", error);
         alert("處理檔案時發生錯誤");
@@ -149,6 +162,19 @@ export default function Home() {
     }
   }, [selectedSlice, selectedModel, toast, setActiveTab]);
 
+  const handleRecordSelect = ({ imageFile, analysisResult, modelName }) => {
+    setSelectedFile(imageFile);
+    setSelectedSlice(imageFile); // 如果是處理切片的情況，可能需要調整
+    setAnalysisResult(analysisResult);
+    setSelectedModel(modelName);
+
+    setImageUrls((prev) => ({
+      ...prev,
+      original: URL.createObjectURL(imageFile),
+      analyzed: URL.createObjectURL(imageFile), // 如果有分析後的圖片，使用分析後的圖片
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 頂部導航欄 */}
@@ -159,9 +185,11 @@ export default function Home() {
               <h1 className="text-2xl font-bold text-gray-900">
                 椎骨影像分析系統
               </h1>
-              <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
-                台中榮總
-              </span>
+              <div className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-800">
+                <div className="text-xs">逢甲通訊</div>
+                <div className="h-px bg-blue-200 my-0.5"></div>
+                <div className="text-xs">台中榮總</div>
+              </div>
               <HealthCheck />
             </div>
             <div className="flex items-center space-x-4">
@@ -169,6 +197,10 @@ export default function Home() {
               <IssueReport
                 currentImage={selectedFile}
                 analysisResult={analysisResult}
+              />
+              <RecordsDialog
+                onRecordSelect={handleRecordSelect}
+                setActiveTab={setActiveTab}
               />
               <Settings />
             </div>
@@ -201,9 +233,16 @@ export default function Home() {
                   </TabsTrigger>
                 </TabsList>
 
+                {selectedFile && (
+                  <div className="text-sm text-gray-500 flex items-center justify-center">
+                    當前檔案：{selectedFile.name}
+                  </div>
+                )}
+
                 <TabsContent value="upload" className="mt-6">
                   <div className="space-y-6">
                     <FileUpload onFileSelect={handleFileSelect} />
+                    <ExampleData onFileSelect={handleFileSelect} />
                     {isProcessing && (
                       <div className="flex items-center justify-center">
                         <Loader2 className="h-8 w-8 animate-spin" />
@@ -249,6 +288,8 @@ export default function Home() {
                     originalUrl={imageUrls.original}
                     analyzedUrl={imageUrls.analyzed}
                     analysisResult={analysisResult}
+                    selectedFile={selectedSlice}
+                    modelName={selectedModel}
                   />
                 </TabsContent>
               </Tabs>
