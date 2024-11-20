@@ -1,5 +1,5 @@
 // components/HealthCheck/index.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -10,10 +10,12 @@ const HealthCheck = () => {
   const [status, setStatus] = useState("unknown");
   const [isChecking, setIsChecking] = useState(false);
   const { toast } = useToast();
+  const isCheckingRef = useRef(false);
 
   const handleHealthCheck = useCallback(async () => {
-    if (isChecking) return;
+    if (isCheckingRef.current) return;
 
+    isCheckingRef.current = true;
     setIsChecking(true);
     try {
       await checkHealth();
@@ -32,8 +34,9 @@ const HealthCheck = () => {
       });
     } finally {
       setIsChecking(false);
+      isCheckingRef.current = false;
     }
-  }, [isChecking, toast]);
+  }, [toast]);
 
   useEffect(() => {
     handleHealthCheck();
