@@ -1,6 +1,7 @@
 // components/RecordsDialog/index.js
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -264,14 +265,18 @@ const RecordsDialog = ({ onRecordSelect, setActiveTab }) => {
                   onClick={() => handleRecordClick(record)}
                 >
                   {/* 縮圖 */}
-                  <div className="w-20 h-20 flex-shrink-0 rounded overflow-hidden">
-                    <img
+                  <div className="w-20 h-20 flex-shrink-0 rounded overflow-hidden relative">
+                    {" "}
+                    {/* 添加 relative */}
+                    <Image
                       src={record.imageData}
                       alt="Analysis thumbnail"
-                      className="w-full h-full object-cover"
+                      fill={true} // 使用 fill 模式
+                      sizes="80px" // 設置尺寸提示
+                      className="object-cover"
+                      priority={false} // 不優先加載
                     />
                   </div>
-
                   {/* 記錄信息 */}
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
