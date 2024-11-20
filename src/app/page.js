@@ -97,7 +97,18 @@ export default function Home() {
         const slicesData = await processNiftiFile(file);
         console.log("Received slices:", slicesData);
         console.log("Number of slices:", slicesData.length);
-        setSlices(slicesData);
+        // 為每個切片添加原始文件名
+        const slicesWithName = slicesData.map((blob, index) => {
+          // 創建新的 File 對象，保留原始文件名但添加切片編號
+          return new File(
+            [blob],
+            `${file.name.split(".")[0]}_slice_${index}.png`,
+            {
+              type: "image/png",
+            }
+          );
+        });
+        setSlices(slicesWithName);
       } catch (error) {
         console.error("Error processing file:", error);
         alert("處理檔案時發生錯誤");
@@ -221,6 +232,12 @@ export default function Home() {
                     分析結果
                   </TabsTrigger>
                 </TabsList>
+
+                {selectedFile && (
+                  <div className="text-sm text-gray-500 flex items-center justify-center">
+                    當前檔案：{selectedFile.name}
+                  </div>
+                )}
 
                 <TabsContent value="upload" className="mt-6">
                   <div className="space-y-6">
