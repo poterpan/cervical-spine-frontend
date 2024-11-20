@@ -13,6 +13,7 @@ import SliceSelector from "@/components/SliceSelector";
 import Settings from "@/components/Settings";
 import VersionInfo from "@/components/VersionInfo";
 import IssueReport from "@/components/IssueReport";
+import HealthCheck from "@/components/HealthCheck";
 import { analyzeImage, processNiftiFile } from "@/services/api";
 
 export default function Home() {
@@ -154,6 +155,7 @@ export default function Home() {
               <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
                 台中榮總
               </span>
+              <HealthCheck />
             </div>
             <div className="flex items-center space-x-4">
             <VersionInfo />

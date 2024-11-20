@@ -132,3 +132,25 @@ export const reportIssue = async (description, identity, image, analysisResult) 
     throw error;
   }
 };
+
+export const checkHealth = async () => {
+  try {
+    const response = await fetch(`${getApiUrl()}/health`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Health check failed');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log('Health check error:', error);
+    throw error;
+  }
+};
