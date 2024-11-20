@@ -73,7 +73,7 @@ const ExampleData = ({ onFileSelect }) => {
       </div>
       <div className="flex space-x-2">
         <Button
-          variant="outline"
+          variant="secondary"
           onClick={handleDownload}
           className="flex items-center space-x-2"
         >
@@ -81,7 +81,7 @@ const ExampleData = ({ onFileSelect }) => {
           <span>下載範例檔案</span>
         </Button>
         <Button
-          variant="secondary"  // 使用不同的變體來突出此操作
+          variant="outline"  // 使用不同的變體來突出此操作
           onClick={handleLoadExample}
           className="flex items-center space-x-2"
         >
