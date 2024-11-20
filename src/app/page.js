@@ -16,6 +16,7 @@ import VersionInfo from "@/components/VersionInfo";
 import IssueReport from "@/components/IssueReport";
 import HealthCheck from "@/components/HealthCheck";
 import RecordsDialog from "@/components/RecordsDialog";
+import ExampleData from "@/components/ExampleData";
 import { analyzeImage, processNiftiFile } from "@/services/api";
 
 export default function Home() {
@@ -222,6 +223,7 @@ export default function Home() {
                 <TabsContent value="upload" className="mt-6">
                   <div className="space-y-6">
                     <FileUpload onFileSelect={handleFileSelect} />
+                    <ExampleData onFileSelect={handleFileSelect} />
                     {isProcessing && (
                       <div className="flex items-center justify-center">
                         <Loader2 className="h-8 w-8 animate-spin" />
