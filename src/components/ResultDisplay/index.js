@@ -5,7 +5,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Image as ImageIcon, Maximize2, X } from "lucide-react";
+import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { storageService } from "@/services/storageService";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +17,15 @@ import {
 } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
-const ResultDisplay = ({ originalUrl, analysisResult }) => {
+const ResultDisplay = ({
+  originalUrl,
+  analyzedUrl,
+  analysisResult,
+  selectedFile,
+  modelName,
+}) => {
+  const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
   const [hoveredSegment, setHoveredSegment] = useState(null);
   const [displayUrl, setDisplayUrl] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -287,6 +298,38 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
     );
   };
 
+  const handleSave = async () => {
+    if (!analysisResult || !selectedFile) {
+      toast({
+        title: "無法保存",
+        description: "缺少必要的分析數據",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await storageService.saveAnalysis(
+        selectedFile,
+        analysisResult,
+        modelName
+      );
+      toast({
+        title: "保存成功",
+        description: "分析結果已成功保存",
+      });
+    } catch (error) {
+      toast({
+        title: "保存失敗",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 gap-6">
@@ -332,6 +375,18 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
             {renderAnalysisContent(false)}
           </CardContent>
         </Card>
+      </div>
+      {/* 添加保存按鈕 */}
+      <div className="flex justify-end mt-4">
+        <Button
+          variant="outline"
+          onClick={handleSave}
+          disabled={isSaving}
+          className="flex items-center space-x-2"
+        >
+          <Save className="h-4 w-4" />
+          <span>{isSaving ? "保存中..." : "保存結果"}</span>
+        </Button>
       </div>
 
       <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>

@@ -15,6 +15,7 @@ import Settings from "@/components/Settings";
 import VersionInfo from "@/components/VersionInfo";
 import IssueReport from "@/components/IssueReport";
 import HealthCheck from "@/components/HealthCheck";
+import RecordsDialog from "@/components/RecordsDialog";
 import { analyzeImage, processNiftiFile } from "@/services/api";
 
 export default function Home() {
@@ -149,6 +150,19 @@ export default function Home() {
     }
   }, [selectedSlice, selectedModel, toast, setActiveTab]);
 
+  const handleRecordSelect = ({ imageFile, analysisResult, modelName }) => {
+    setSelectedFile(imageFile);
+    setSelectedSlice(imageFile); // 如果是處理切片的情況，可能需要調整
+    setAnalysisResult(analysisResult);
+    setSelectedModel(modelName);
+
+    setImageUrls((prev) => ({
+      ...prev,
+      original: URL.createObjectURL(imageFile),
+      analyzed: URL.createObjectURL(imageFile), // 如果有分析後的圖片，使用分析後的圖片
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 頂部導航欄 */}
@@ -169,6 +183,10 @@ export default function Home() {
               <IssueReport
                 currentImage={selectedFile}
                 analysisResult={analysisResult}
+              />
+              <RecordsDialog
+                onRecordSelect={handleRecordSelect}
+                setActiveTab={setActiveTab}
               />
               <Settings />
             </div>
@@ -249,6 +267,8 @@ export default function Home() {
                     originalUrl={imageUrls.original}
                     analyzedUrl={imageUrls.analyzed}
                     analysisResult={analysisResult}
+                    selectedFile={selectedSlice}
+                    modelName={selectedModel}
                   />
                 </TabsContent>
               </Tabs>
