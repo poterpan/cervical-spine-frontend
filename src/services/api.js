@@ -11,7 +11,7 @@ const getApiUrl = () => {
     return savedUrl;
   }
   // 最後使用環境變數或預設值
-  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';  // 改為8000端口
+  return process.env.NEXT_PUBLIC_API_URL || 'https://api.panspace.me:8001';
 };
 
 export const processNiftiFile = async (file) => {
@@ -90,6 +90,45 @@ export const analyzeImage = async (file, model) => {
     return data;
   } catch (error) {
     console.error('Analysis error:', error);
+    throw error;
+  }
+};
+
+export const reportIssue = async (description, identity, image, analysisResult) => {
+  const formData = new FormData();
+  formData.append('description', description);
+  formData.append('timestamp', new Date().toISOString());
+  
+  if (identity) {
+    formData.append('identity', identity);
+  }
+  
+  if (image) {
+    formData.append('image', image);
+  }
+  
+  if (analysisResult) {
+    formData.append('analysisResult', JSON.stringify(analysisResult));
+  }
+
+  try {
+    const response = await fetch(`${getApiUrl()}/report-issue`, {
+      method: 'POST',
+      body: formData,
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || error.error || 'Report submission failed');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Issue report error:', error);
     throw error;
   }
 };

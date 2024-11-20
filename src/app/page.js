@@ -4,12 +4,15 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, Building2, Users, Activity, History } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import FileUpload from "@/components/FileUpload";
 import ModelSelector from "@/components/ModelSelector";
 import ResultDisplay from "@/components/ResultDisplay";
 import SliceSelector from "@/components/SliceSelector";
 import Settings from "@/components/Settings";
+import VersionInfo from "@/components/VersionInfo";
+import IssueReport from "@/components/IssueReport";
 import { analyzeImage, processNiftiFile } from "@/services/api";
 
 export default function Home() {
@@ -141,85 +144,109 @@ export default function Home() {
   }, [selectedSlice, selectedModel]);
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto">
-        <Settings /> {/* 添加設定按鈕 */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">
-              椎骨影像分析系統
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="upload">上傳檔案</TabsTrigger>
-                <TabsTrigger value="select" disabled={!selectedFile}>
-                  選擇切片
-                </TabsTrigger>
-                <TabsTrigger value="results" disabled={!analysisResult}>
-                  分析結果
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="upload" className="mt-6">
-                <div className="space-y-6">
-                  <FileUpload onFileSelect={handleFileSelect} />
-                  {isProcessing && (
-                    <div className="flex items-center justify-center">
-                      <Loader2 className="h-8 w-8 animate-spin" />
-                      <span className="ml-2">處理中...</span>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="select" className="mt-6">
-                <div className="space-y-6">
-                  <SliceSelector
-                    file={selectedFile}
-                    slices={slices}
-                    onSliceSelect={handleSliceSelect}
-                  />
-
-                  <ModelSelector
-                    selectedModel={selectedModel}
-                    onModelSelect={handleModelSelect}
-                  />
-
-                  <Button
-                    className="w-full"
-                    size="lg"
-                    disabled={!selectedSlice || !selectedModel || isAnalyzing}
-                    onClick={handleAnalysis}
-                  >
-                    {isAnalyzing ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        分析中...
-                      </>
-                    ) : (
-                      "開始分析"
-                    )}
-                  </Button>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="results" className="mt-6">
-                <ResultDisplay
-                  originalUrl={imageUrls.original}
-                  analyzedUrl={imageUrls.analyzed}
-                  analysisResult={analysisResult}
-                />
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+    <div className="min-h-screen bg-gray-50">
+      {/* 頂部導航欄 */}
+      <div className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <h1 className="text-2xl font-bold text-gray-900">椎骨影像分析系統</h1>
+              <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                台中榮總
+              </span>
+            </div>
+            <div className="flex items-center space-x-4">
+            <VersionInfo />
+            <IssueReport
+    currentImage={selectedFile}
+    analysisResult={analysisResult}
+  />
+              <Settings />
+            </div>
+          </div>
+        </div>
       </div>
-    </main>
+
+      {/* 主要內容區域 */}
+      <main className="p-8">
+        <div className="max-w-6xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-center">
+                影像分析介面
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="w-full"
+              >
+                <TabsList className="grid w-full grid-cols-3 mb-6">
+                  <TabsTrigger value="upload">上傳檔案</TabsTrigger>
+                  <TabsTrigger value="select" disabled={!selectedFile}>
+                    選擇切片
+                  </TabsTrigger>
+                  <TabsTrigger value="results" disabled={!analysisResult}>
+                    分析結果
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="upload" className="mt-6">
+                  <div className="space-y-6">
+                    <FileUpload onFileSelect={handleFileSelect} />
+                    {isProcessing && (
+                      <div className="flex items-center justify-center">
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                        <span className="ml-2">處理中...</span>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="select" className="mt-6">
+                  <div className="space-y-6">
+                    <SliceSelector
+                      file={selectedFile}
+                      slices={slices}
+                      onSliceSelect={handleSliceSelect}
+                    />
+
+                    <ModelSelector
+                      selectedModel={selectedModel}
+                      onModelSelect={handleModelSelect}
+                    />
+
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      disabled={!selectedSlice || !selectedModel || isAnalyzing}
+                      onClick={handleAnalysis}
+                    >
+                      {isAnalyzing ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          分析中...
+                        </>
+                      ) : (
+                        "開始分析"
+                      )}
+                    </Button>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="results" className="mt-6">
+                  <ResultDisplay
+                    originalUrl={imageUrls.original}
+                    analyzedUrl={imageUrls.analyzed}
+                    analysisResult={analysisResult}
+                  />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
   );
 }

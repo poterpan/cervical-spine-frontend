@@ -262,6 +262,9 @@ const ResultDisplay = ({ originalUrl, analysisResult }) => {
           <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white p-2 rounded z-20">
             <p className="font-bold">{hoveredSegment.label}</p>
             <p>信心度: {(hoveredSegment.confidence * 100).toFixed(1)}%</p>
+            {hoveredSegment.is_reference && (
+              <p className="text-yellow-400">參考區域</p>
+            )}
           </div>
         )}
 
