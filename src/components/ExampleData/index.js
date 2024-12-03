@@ -78,7 +78,7 @@ const ExampleData = ({ onFileSelect }) => {
           className="flex items-center space-x-2"
         >
           <Download className="h-4 w-4" />
-          <span>下載範例檔案</span>
+          <span>下載檔案</span>
         </Button>
         <Button
           variant="outline"  // 使用不同的變體來突出此操作
@@ -86,7 +86,7 @@ const ExampleData = ({ onFileSelect }) => {
           className="flex items-center space-x-2"
         >
           <FileImage className="h-4 w-4" />
-          <span>直接使用範例</span>
+          <span>直接使用</span>
         </Button>
       </div>
       <div className="mt-2 text-xs text-gray-500">
