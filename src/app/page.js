@@ -186,8 +186,8 @@ export default function Home() {
               {/* Logo 和標題區域 */}
               <div className="flex items-center">
                 <div className="relative h-8 w-8 mr-2">
-                  <Image 
-                    src="/logo.png" 
+                  <Image
+                    src="/logo.png"
                     alt="Logo"
                     fill
                     priority
@@ -203,7 +203,9 @@ export default function Home() {
                 <div className="h-px bg-blue-200 my-0.5"></div>
                 <div className="text-xs">台中榮總</div>
               </div>
-              <HealthCheck />
+              <div className="hidden md:block">
+                <HealthCheck />
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <VersionInfo />
