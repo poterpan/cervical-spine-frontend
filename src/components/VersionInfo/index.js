@@ -33,7 +33,7 @@ const VersionInfo = () => {
       <DialogTrigger asChild>
         <Button variant="ghost" className="flex items-center">
           <Info className="h-5 w-5 mr-2" />
-          版本資訊
+          <span className="hidden md:inline">版本資訊</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -79,9 +79,9 @@ const VersionInfo = () => {
             <p className="text-sm text-center text-gray-500">
               Powered by{" "}
               <span className="font-medium">
-                F<span className="text-gray-400">eng</span>{" "}
-                C<span className="text-gray-400">hia</span>{" "}
-                U<span className="text-gray-400">niversity</span>
+                F<span className="text-gray-400">eng</span> C
+                <span className="text-gray-400">hia</span> U
+                <span className="text-gray-400">niversity</span>
               </span>
             </p>
           </div>

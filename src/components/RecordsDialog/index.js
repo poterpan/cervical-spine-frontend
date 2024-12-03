@@ -176,7 +176,7 @@ const RecordsDialog = ({ onRecordSelect, setActiveTab }) => {
       <DialogTrigger asChild>
         <Button variant="ghost" className="flex items-center space-x-2">
           <History className="h-5 w-5" />
-          <span>分析記錄</span>
+          <span className="hidden md:inline">分析紀錄</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] max-h-[80vh] flex flex-col">

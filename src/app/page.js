@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -182,9 +183,21 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900">
-                椎骨影像分析系統
-              </h1>
+              {/* Logo 和標題區域 */}
+              <div className="flex items-center">
+                <div className="relative h-8 w-8 mr-2">
+                  <Image 
+                    src="/logo.svg" 
+                    alt="Logo"
+                    fill
+                    priority
+                    className="object-contain"
+                  />
+                </div>
+                <h1 className="text-2xl font-bold text-gray-900 hidden md:block">
+                  椎骨影像分析系統
+                </h1>
+              </div>
               <div className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-800">
                 <div className="text-xs">逢甲通訊</div>
                 <div className="h-px bg-blue-200 my-0.5"></div>

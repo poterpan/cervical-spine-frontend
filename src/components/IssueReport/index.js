@@ -12,7 +12,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { Bug, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { reportIssue } from "@/services/api";
 
@@ -72,8 +72,8 @@ const IssueReport = ({ currentImage, analysisResult }) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="flex items-center">
-          <AlertCircle className="h-5 w-5 mr-2" />
-          問題回報
+          <Bug className="h-5 w-5 mr-2" />
+          <span className="hidden md:inline">問題回報</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
