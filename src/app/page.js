@@ -187,7 +187,7 @@ export default function Home() {
               <div className="flex items-center">
                 <div className="relative h-8 w-8 mr-2">
                   <Image 
-                    src="/logo.svg" 
+                    src="/logo.png" 
                     alt="Logo"
                     fill
                     priority

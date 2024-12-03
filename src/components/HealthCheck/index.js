@@ -67,7 +67,7 @@ const HealthCheck = () => {
       ) : (
         <div className={`h-3 w-3 rounded-full ${getStatusStyles()}`} />
       )}
-      <span className="text-xs text-gray-600">
+      <span className="text-xs text-gray-600 hidden md:inline">
         {isChecking ? "檢查中" : "伺服器狀態"}
       </span>
     </Button>

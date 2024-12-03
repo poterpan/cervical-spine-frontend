@@ -32,7 +32,7 @@ const VersionInfo = () => {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" className="flex items-center">
-          <Info className="h-5 w-5 mr-2" />
+          <Info className="h-5 w-5" />
           <span className="hidden md:inline">版本資訊</span>
         </Button>
       </DialogTrigger>

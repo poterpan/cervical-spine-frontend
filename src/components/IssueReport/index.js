@@ -72,7 +72,7 @@ const IssueReport = ({ currentImage, analysisResult }) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="flex items-center">
-          <Bug className="h-5 w-5 mr-2" />
+          <Bug className="h-5 w-5" />
           <span className="hidden md:inline">問題回報</span>
         </Button>
       </DialogTrigger>
