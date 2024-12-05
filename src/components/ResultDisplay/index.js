@@ -331,8 +331,8 @@ const ResultDisplay = ({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-6">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="hidden md:block">
           <CardHeader className="flex flex-row items-center h-[56px] pb-0 space-y-0">
             <CardTitle className="text-xl">原始影像</CardTitle>
           </CardHeader>
@@ -357,7 +357,7 @@ const ResultDisplay = ({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="col-span-1">
           <CardHeader className="flex flex-row items-center justify-between h-[56px] pb-0 space-y-0">
             <CardTitle className="text-xl">分割結果</CardTitle>
             <Button
