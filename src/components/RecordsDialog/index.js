@@ -30,6 +30,7 @@ import {
   Trash2,
   Database,
   TrendingUp,
+  NotepadText,
 } from "lucide-react";
 import { storageService } from "@/services/storageService";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -169,6 +170,33 @@ const RecordsDialog = ({ onRecordSelect, setActiveTab }) => {
     }
   };
 
+  const handleLoadTemplate = async () => {
+    try {
+      // 從公共目錄載入範本 JSON
+      const response = await fetch("/examples/template.json");
+      const templateData = await response.json();
+
+      await storageService.importRecords(
+        new Blob([JSON.stringify(templateData)], {
+          type: "application/json",
+        })
+      );
+
+      toast({
+        title: "範本載入成功",
+        description: "已成功載入預設範本數據",
+      });
+
+      loadRecords(); // 重新載入記錄
+    } catch (error) {
+      toast({
+        title: "範本載入失敗",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   // 當對話框開啟時載入記錄
   const handleOpenChange = (newOpen) => {
     setOpen(newOpen);
@@ -267,35 +295,46 @@ const RecordsDialog = ({ onRecordSelect, setActiveTab }) => {
               </Button>
             </div>
 
-            {/* 清空資料庫按鈕 */}
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  className="flex items-center space-x-2"
-                >
-                  <Database className="h-4 w-4" />
-                  <span>清空記錄</span>
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>確認清空所有記錄？</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    此操作將永久删除所有分析記錄，無法恢復。
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>取消</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleClearAll}
-                    className="bg-red-600 hover:bg-red-700"
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleLoadTemplate}
+                title="載入預設範本"
+              >
+                <NotepadText className="h-4 w-4" />
+              </Button>
+
+              {/* 清空資料庫按鈕 */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    className="flex items-center space-x-2"
                   >
-                    確認清空
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                    <Database className="h-4 w-4" />
+                    <span>清空記錄</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>確認清空所有記錄？</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      此操作將永久删除所有分析記錄，無法恢復。
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>取消</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleClearAll}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      確認清空
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
 
           {/* 記錄列表 */}
